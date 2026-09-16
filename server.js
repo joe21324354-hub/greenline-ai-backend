@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
 const OpenAI = require("openai");
+const { toFile } = require("openai/uploads");
 const fs = require("fs");
 
 const app = express();
@@ -38,9 +39,17 @@ app.post(
         model: "gpt-image-2",
 
         image: [
-          fs.createReadStream(spaceImage.path),
-          fs.createReadStream(productImage.path),
-        ],
+  await toFile(
+    await fs.promises.readFile(spaceImage.path),
+    "space.jpg",
+    { type: "image/jpeg" }
+  ),
+  await toFile(
+    await fs.promises.readFile(productImage.path),
+    "product.jpg",
+    { type: "image/jpeg" }
+  ),
+],
 
         prompt: `
 Create a photorealistic architectural visualization.
